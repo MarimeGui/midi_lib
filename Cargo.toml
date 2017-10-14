@@ -1,0 +1,7 @@
+[package]
+name = "midi_lib"
+version = "0.1.0"
+authors = ["Marime_Gui <lepro.guillaume@gmail.com>"]
+
+[dependencies]
+ez_io = { git = "https://github.com/MarimeGui/ez_io" }

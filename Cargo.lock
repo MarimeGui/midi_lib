@@ -1,0 +1,14 @@
+[root]
+name = "midi_lib"
+version = "0.1.0"
+dependencies = [
+ "ez_io 0.1.0 (git+https://github.com/MarimeGui/ez_io)",
+]
+
+[[package]]
+name = "ez_io"
+version = "0.1.0"
+source = "git+https://github.com/MarimeGui/ez_io#d2a4813195cce30cdc7268757aff0013011a299d"
+
+[metadata]
+"checksum ez_io 0.1.0 (git+https://github.com/MarimeGui/ez_io)" = "<none>"

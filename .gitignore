@@ -1,0 +1,4 @@
+/target/
+**/*.rs.bk
+midi_lib.iml
+.idea
