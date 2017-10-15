@@ -6,8 +6,6 @@ use ez_io::ReadE;
 use self::midi::*;
 use self::midi::channel_voice_message::*;
 // use self::midi::channel_mode_message::*;
-use std::io::Seek;
-use std::io::SeekFrom;
 use self::sysex::*;
 use self::meta::*;
 use std::error::Error;
@@ -84,7 +82,7 @@ pub enum Event {
 }
 
 impl Event {
-    pub fn new<R: Read + Seek>(reader: &mut R, last_event: Option<Event>) -> Result<Event, Box<Error>> {
+    pub fn new<R: Read>(reader: &mut R, last_event: Option<Event>) -> Result<Event, Box<Error>> {
         let event: u8 = reader.read_to_u8().unwrap();
         if (event & 0b10000000u8 == 0u8) & (!last_event.is_some()) {  // Running Status
             Err(Box::new(NoPreviousEvent))

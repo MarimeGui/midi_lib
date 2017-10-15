@@ -2,8 +2,6 @@ use ez_io::ReadE;
 use std::io::Read;
 use std::error::Error;
 use std::result::Result;
-use std::io::Seek;
-use std::io::SeekFrom;
 
 #[derive(Clone)]
 pub struct NoteChange {
@@ -51,7 +49,7 @@ pub struct ControllerChange {
 }
 
 impl ControllerChange {
-    pub fn read<R: Read + Seek>(reader: &mut R, channel: u8) -> Result<ControllerChange, Box<Error>> {
+    pub fn read<R: Read>(reader: &mut R, channel: u8) -> Result<ControllerChange, Box<Error>> {
         let controller_number: u8 = reader.read_to_u8()?;
         let controller_value: u8 = reader.read_to_u8()?;
         Ok(ControllerChange {

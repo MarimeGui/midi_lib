@@ -1,8 +1,6 @@
 pub mod event;
 
 use std::io::Read;
-use std::io::Seek;
-use std::io::SeekFrom;
 use std::error::Error;
 use super::super::super::VLVRead;
 use self::event::Event;
@@ -16,7 +14,7 @@ pub struct TrackEvent {
 }
 
 impl TrackEvent {
-    pub fn new<R: Read + Seek>(reader: &mut R, last_event: Option<Event>) -> Result<TrackEvent, Box<Error>> {
+    pub fn new<R: Read>(reader: &mut R, last_event: Option<Event>) -> Result<TrackEvent, Box<Error>> {
         let delta_time: u32 = reader.read_vlv()?;
         let event: Event = Event::new(reader, last_event)?;
         Ok(TrackEvent {

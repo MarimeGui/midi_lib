@@ -1,8 +1,6 @@
 use super::super::super::super::super::VLVRead;
 use ez_io::ReadE;
 use std::io::Read;
-use std::io::Seek;
-use std::io::SeekFrom;
 use std::error::Error;
 use std::result::Result;
 
@@ -126,7 +124,7 @@ pub struct KeySignature {
 }
 
 impl KeySignature {
-    pub fn read<R: Read + Seek>(reader: &mut R) -> Result<KeySignature, Box<Error>> {
+    pub fn read<R: Read>(reader: &mut R) -> Result<KeySignature, Box<Error>> {
         let number_of_sharp_flats: u8 = reader.read_to_u8()?;
         let major_key: u8 = reader.read_to_u8()?;
         let major_key_bool: bool;
