@@ -26,7 +26,7 @@ pub struct TextEvent {
 
 impl TextEvent {
     pub fn read<R: Read>(reader: &mut R) -> Result<TextEvent, Box<Error>> {
-        let length: u32 = reader.read_vlv()?;
+        let length: u32 = reader.read_vlv()?.0;
         let mut bytes = vec![0; length as usize];
         reader.read_exact(&mut bytes)?;
         let text: String = String::from_utf8_lossy(&bytes).into_owned();
@@ -144,16 +144,27 @@ impl KeySignature {
 pub struct SequencerSpecificMetaEvent {
     pub length: u32,
     pub id: u32,
-    pub data: u8
+    pub data: u32
 }
 
 impl SequencerSpecificMetaEvent {
     pub fn read<R: Read>(reader: &mut R) -> Result<SequencerSpecificMetaEvent, Box<Error>> {
-        let length: u32 = reader.read_vlv()?;
-        let id: u32 = reader.read_vlv()?;
-        let data: u8 = reader.read_to_u8()?;
+        // Read the total length of the rest of the Event
+        let total_length: u32 = reader.read_vlv()?.0;
+        // Read the VLV containing the id
+        let vlv_id = reader.read_vlv()?;
+        // Get the id
+        let id: u32 = vlv_id.0;
+        // Get the number of bytes that have been read when reading the id vlv
+        let id_length: u8 = vlv_id.1;
+        // Create the data value
+        let mut data: u32 = 0;
+        // Read the rest of the Event
+        for _ in 0..(total_length-(id_length as u32)) {
+            data += reader.read_to_u8()? as u32;
+        }
         Ok(SequencerSpecificMetaEvent {
-            length,
+            length: total_length,
             id,
             data
         })

@@ -15,7 +15,7 @@ pub struct TrackEvent {
 
 impl TrackEvent {
     pub fn new<R: Read>(reader: &mut R, last_event: Option<Event>) -> Result<TrackEvent, Box<Error>> {
-        let delta_time: u32 = reader.read_vlv()?;
+        let delta_time: u32 = reader.read_vlv()?.0;
         let event: Event = Event::new(reader, last_event)?;
         Ok(TrackEvent {
             delta_time,
