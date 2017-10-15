@@ -19,7 +19,6 @@ pub struct SMF {
 impl SMF {
     // Function for creating an SMF structure
     pub fn read<R: Read + Seek>(reader: &mut R) -> Result<SMF, Box<Error>> {
-        println!("New file");
         let header: SMFHeaderChunk = SMFHeaderChunk::read(reader)?;
         let mut tracks: Vec<SMFTrackChunk> = Vec::with_capacity(header.nb_tracks as usize);
         for _ in 0..header.nb_tracks {

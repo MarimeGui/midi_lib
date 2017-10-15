@@ -20,11 +20,8 @@ pub struct SMFTrackChunk {
 
 impl SMFTrackChunk {
     pub fn read<R: Read + Seek>(reader: &mut R) -> Result<SMFTrackChunk, Box<Error>> {
-        println!("New Track Chunk @ {}", reader.seek(SeekFrom::Current(0))?);
         assert_eq!(String::from("MTrk"), reader.read_to_string_n(4)?, "Magic Number did not match");
         let length: u32 = reader.read_be_to_u32()?;
-        println!("Length of Track Chunk {}", length);
-        println!("Now @ {}", reader.seek(SeekFrom::Current(0))?);
         // Where does these track events start
         let track_event_start = reader.seek(SeekFrom::Current(0))?;
         // Make the vector that will be responsible for storing all the Track Events

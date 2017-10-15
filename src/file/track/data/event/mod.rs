@@ -85,7 +85,6 @@ pub enum Event {
 
 impl Event {
     pub fn new<R: Read + Seek>(reader: &mut R, last_event: Option<Event>) -> Result<Event, Box<Error>> {
-        println!("New Event @ {}", reader.seek(SeekFrom::Current(0))?);
         let event: u8 = reader.read_to_u8().unwrap();
         if (event & 0b10000000u8 == 0u8) & (!last_event.is_some()) {  // Running Status
             Err(Box::new(NoPreviousEvent))

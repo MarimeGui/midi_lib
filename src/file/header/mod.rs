@@ -41,7 +41,6 @@ pub struct SMFHeaderChunk {
 
 impl SMFHeaderChunk {
     pub fn read<R: Read + Seek>(reader: &mut R) -> Result<SMFHeaderChunk, Box<Error>> {
-        println!("New Header");
         assert_eq!(String::from("MThd"), reader.read_to_string_n(4)?, "Magic Number did not match");
         let length: u32 = reader.read_be_to_u32()?;
         let format_num: u16 = reader.read_be_to_u16()?;

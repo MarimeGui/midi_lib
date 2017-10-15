@@ -32,7 +32,6 @@ impl TextEvent {
         let mut bytes = vec![0; length as usize];
         reader.read_exact(&mut bytes)?;
         let text: String = String::from_utf8_lossy(&bytes).into_owned();
-        println!("New Text Event: {}", text);
         Ok(TextEvent {
             length,
             text
@@ -64,7 +63,6 @@ pub struct SetTempo {
 
 impl SetTempo {
     pub fn read<R: Read>(reader: &mut R) -> Result<SetTempo, Box<Error>> {
-        println!("New Set Tempo !");
         let tempo: u32 = reader.read_be_to_u16()? as u32 + reader.read_to_u8()? as u32;
         Ok(SetTempo {
             tempo
@@ -129,7 +127,6 @@ pub struct KeySignature {
 
 impl KeySignature {
     pub fn read<R: Read + Seek>(reader: &mut R) -> Result<KeySignature, Box<Error>> {
-        println!("New Key Signature !");
         let number_of_sharp_flats: u8 = reader.read_to_u8()?;
         let major_key: u8 = reader.read_to_u8()?;
         let major_key_bool: bool;
@@ -138,7 +135,6 @@ impl KeySignature {
         } else {
             major_key_bool = false;
         }
-        println!("Finished Reading Key Signature @ {}", reader.seek(SeekFrom::Current(0))?);
         Ok(KeySignature {
             number_of_sharp_flats,
             major_key: major_key_bool

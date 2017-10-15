@@ -52,12 +52,8 @@ pub struct ControllerChange {
 
 impl ControllerChange {
     pub fn read<R: Read + Seek>(reader: &mut R, channel: u8) -> Result<ControllerChange, Box<Error>> {
-        println!("New Controller Change @ {}", reader.seek(SeekFrom::Current(0)).unwrap());
-        println!("Controller Change Channel: {}", channel);
         let controller_number: u8 = reader.read_to_u8()?;
-        println!("Controller Change Controller Number: {}", controller_number);
         let controller_value: u8 = reader.read_to_u8()?;
-        println!("Controller Change Controller Value: {}", controller_value);
         Ok(ControllerChange {
             channel,
             controller_number,

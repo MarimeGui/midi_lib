@@ -17,9 +17,7 @@ pub struct TrackEvent {
 
 impl TrackEvent {
     pub fn new<R: Read + Seek>(reader: &mut R, last_event: Option<Event>) -> Result<TrackEvent, Box<Error>> {
-        println!("New Track Event @ {}", reader.seek(SeekFrom::Current(0))?);
         let delta_time: u32 = reader.read_vlv()?;
-        println!("After Delta Time @ {}", reader.seek(SeekFrom::Current(0))?);
         let event: Event = Event::new(reader, last_event)?;
         Ok(TrackEvent {
             delta_time,
