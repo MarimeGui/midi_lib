@@ -21,9 +21,14 @@ impl fmt::Display for VLVTooBigError {
     }
 }
 
+pub struct VLV {
+    pub real_length: u8,
+    pub data: u32
+}
+
 // Makes it easy to read VLVs
 pub trait VLVRead: Read {
-    fn read_vlv(&mut self) -> Result<(u32, u8), Box<Error>> {
+    fn read_vlv(&mut self) -> Result<VLV, Box<Error>> {
         let mut out: u32 = 0u32;
         let mut counter: u8 = 0;
         loop {
@@ -37,7 +42,10 @@ pub trait VLVRead: Read {
             }
             counter += 1;
         }
-        Ok((out, counter + 1u8))
+        Ok(VLV {
+            real_length: counter + 1,
+            data: out
+        })
     }
 }
 

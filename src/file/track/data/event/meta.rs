@@ -19,19 +19,16 @@ impl SequenceNumber {
 }
 
 #[derive(Clone)]
-pub struct TextEvent {
-    pub length: u32,
+pub struct Text {
     pub text: String
 }
 
-impl TextEvent {
-    pub fn read<R: Read>(reader: &mut R) -> Result<TextEvent, Box<Error>> {
-        let length: u32 = reader.read_vlv()?.0;
+impl Text {
+    pub fn read<R: Read>(reader: &mut R, length: u32) -> Result<Text, Box<Error>> {
         let mut bytes = vec![0; length as usize];
         reader.read_exact(&mut bytes)?;
         let text: String = String::from_utf8_lossy(&bytes).into_owned();
-        Ok(TextEvent {
-            length,
+        Ok(Text {
             text
         })
     }
@@ -47,6 +44,20 @@ impl MIDIChannelPrefix {
         let channel: u8 = reader.read_to_u8()?;
         Ok(MIDIChannelPrefix {
             channel
+        })
+    }
+}
+
+#[derive(Clone)]
+pub struct MIDIPort {
+    pub port: u8
+}
+
+impl MIDIPort {
+    pub fn read<R: Read>(reader: &mut R) -> Result<MIDIPort, Box<Error>> {
+        let port: u8 = reader.read_to_u8()?;
+        Ok(MIDIPort {
+            port
         })
     }
 }
@@ -141,32 +152,31 @@ impl KeySignature {
 }
 
 #[derive(Clone)]
-pub struct SequencerSpecificMetaEvent {
+pub struct SequencerSpecific {
     pub length: u32,
     pub id: u32,
-    pub data: u32
+    pub data: Vec<u8>
 }
 
-impl SequencerSpecificMetaEvent {
-    pub fn read<R: Read>(reader: &mut R) -> Result<SequencerSpecificMetaEvent, Box<Error>> {
-        // Read the total length of the rest of the Event
-        let total_length: u32 = reader.read_vlv()?.0;
+impl SequencerSpecific {
+    pub fn read<R: Read>(reader: &mut R, total_length: u32) -> Result<SequencerSpecific, Box<Error>> {
         // Read the VLV containing the id
         let vlv_id = reader.read_vlv()?;
         // Get the id
-        let id: u32 = vlv_id.0;
+        let id: u32 = vlv_id.data;
         // Get the number of bytes that have been read when reading the id vlv
-        let id_length: u8 = vlv_id.1;
+        let id_length: u8 = vlv_id.real_length;
         // Create the data value
-        let mut data: u32 = 0;
+        let mut data: Vec<u8> = vec![0; (total_length-(id_length as u32)) as usize];
         // Read the rest of the Event
-        for _ in 0..(total_length-(id_length as u32)) {
-            data += reader.read_to_u8()? as u32;
-        }
-        Ok(SequencerSpecificMetaEvent {
+        reader.read_exact(&mut data)?;
+        Ok(SequencerSpecific {
             length: total_length,
             id,
             data
         })
     }
 }
+
+#[derive(Clone)]
+pub struct Unknown {}
