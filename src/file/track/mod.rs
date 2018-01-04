@@ -33,7 +33,7 @@ impl SMFTrackChunk {
         // Save the Event inside the Track Event we just read for later
         let mut last_event: Event = current_track_event.event;
         // While until we reach the end of the data
-        while reader.seek(SeekFrom::Current(0))? < (track_event_start + (length as u64)) {
+        while reader.seek(SeekFrom::Current(0))? < (track_event_start + (u64::from(length))) {
             // Read a Track Event
             let current_track_event = TrackEvent::new(reader, Some(last_event))?;
             // Keep the Event inside the Track Event we just read for later

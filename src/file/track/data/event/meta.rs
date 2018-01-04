@@ -72,7 +72,7 @@ pub struct SetTempo {
 
 impl SetTempo {
     pub fn read<R: Read>(reader: &mut R) -> Result<SetTempo, Box<Error>> {
-        let tempo: u32 = reader.read_be_to_u16()? as u32 + reader.read_to_u8()? as u32;
+        let tempo: u32 = u32::from(reader.read_be_to_u16()?) + u32::from(reader.read_to_u8()?);
         Ok(SetTempo {
             tempo
         })
@@ -138,12 +138,7 @@ impl KeySignature {
     pub fn read<R: Read>(reader: &mut R) -> Result<KeySignature, Box<Error>> {
         let number_of_sharp_flats: u8 = reader.read_to_u8()?;
         let major_key: u8 = reader.read_to_u8()?;
-        let major_key_bool: bool;
-        if major_key == 0 {
-            major_key_bool = true;
-        } else {
-            major_key_bool = false;
-        }
+        let major_key_bool: bool = major_key == 0;
         Ok(KeySignature {
             number_of_sharp_flats,
             major_key: major_key_bool
@@ -167,7 +162,7 @@ impl SequencerSpecific {
         // Get the number of bytes that have been read when reading the id vlv
         let id_length: u8 = vlv_id.real_length;
         // Create the data value
-        let mut data: Vec<u8> = vec![0; (total_length-(id_length as u32)) as usize];
+        let mut data: Vec<u8> = vec![0; (total_length-u32::from(id_length)) as usize];
         // Read the rest of the Event
         reader.read_exact(&mut data)?;
         Ok(SequencerSpecific {

@@ -73,15 +73,8 @@ impl MidiEvent {
                 channel,
                 event: MidiEventType::NoteOff(NoteChange::read(reader, running_status_byte)?)
             })
-        } else if code_byte == 0x90u8 {
-            // Note On
-            Ok(MidiEvent {
-                code_byte,
-                channel,
-                event: MidiEventType::NoteOn(NoteChange::read(reader, running_status_byte)?)
-            })
-        } else if code_byte == 0xA0u8 {
-            // Polyphonic Key Pressure
+        } else if (code_byte == 0x90u8) || (code_byte == 0xA0u8) {
+            // Note On || Polyphonic Key Pressure
             Ok(MidiEvent {
                 code_byte,
                 channel,
@@ -256,7 +249,7 @@ impl MetaEvent {
             event = MetaEventType::Unknown(meta::Unknown {});
             to_skip = length;
         }
-        reader.seek(SeekFrom::Current(to_skip as i64))?;
+        reader.seek(SeekFrom::Current(i64::from(to_skip)))?;
         Ok(MetaEvent {
             sub_code_byte,
             length,
@@ -284,32 +277,32 @@ impl Event {
         let event;
         let mut code_byte: u8 = reader.read_to_u8()?;
         let mut running_status_byte: Option<u8> = None;
-        if (code_byte & 0b10000000u8 == 0u8) & (!last_event.is_some()) {  // Running Status
+        if (code_byte & 0b1000_0000u8 == 0u8) & (!last_event.is_some()) {  // Running Status
             return Err(Box::new(NoPreviousEvent))
-        } else if (code_byte & 0b10000000u8 == 0u8) & (last_event.is_some()) {
+        } else if (code_byte & 0b1000_0000u8 == 0u8) & (last_event.is_some()) {
             running_status_byte = Some(code_byte);
             code_byte = last_event.unwrap().code_byte;
         }
         if (code_byte & 0xF0u8 >= 0x80u8) & (code_byte & 0xF0u8 <= 0xE0u8) {
             event = EventType::MidiEvent(MidiEvent::read(reader, code_byte, running_status_byte)?);
-            return Ok(Event {
+            Ok(Event {
                 code_byte,
                 event
             })
         } else if (code_byte == 0xF0u8) | (code_byte == 0xF7u8) {
             event = EventType::SysExEvent(SysexEvent::read(reader, code_byte)?);
-            return Ok(Event {
+            Ok(Event {
                 code_byte,
                 event
             })
         } else if code_byte == 0xFFu8 {
             event = EventType::MetaEvent(MetaEvent::read(reader)?);
-            return Ok(Event {
+            Ok(Event {
                 code_byte,
                 event
             })
         } else {
-            return Err(Box::new(UnknownEventError))
+            Err(Box::new(UnknownEventError))
         }
     }
 }

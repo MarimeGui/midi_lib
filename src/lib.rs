@@ -33,8 +33,8 @@ pub trait VLVRead: Read {
         let mut counter: u8 = 0;
         loop {
             let current = self.read_to_u8()?;
-            out += current as u32 & 0b01111111u32;
-            if current & 0b10000000u8 == 0 {
+            out += u32::from(current) & 0b0111_1111u32;
+            if current & 0b1000_0000u8 == 0 {
                 break;
             }
             if counter >= 4 {

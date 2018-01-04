@@ -5,7 +5,6 @@ use std::error::Error;
 use super::super::super::VLVRead;
 use self::event::Event;
 use std::io::Seek;
-use std::io::SeekFrom;
 
 // Represents the combination of a delta_time and an SMFEvent
 

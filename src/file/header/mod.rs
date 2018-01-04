@@ -54,18 +54,18 @@ impl SMFHeaderChunk {
         let nb_tracks: u16 = reader.read_be_to_u16()?;
         let division_info: u16 = reader.read_be_to_u16()?;
         let division_system;
-        if (division_info & 0b1000000000000000u16) == 0 {
+        if (division_info & 0b1000_0000_0000_0000u16) == 0 {
             division_system = MidiDivisionsType::TicksPerQuarterNote(
                 MidiTPQNDivisions{ ticks_per_quarter_note: division_info });
         } else {
-            let ticks_per_smtpe_frame: u16 = division_info & 0b0000000011111111u16;
-            let smtpe_frames_per_second: u16 = division_info & 0b0111111100000000u16;
+            let ticks_per_smtpe_frame: u16 = division_info & 0b0000_0000_1111_1111u16;
+            let smtpe_frames_per_second: u16 = division_info & 0b0111_1111_0000_0000u16;
             division_system = MidiDivisionsType::SMTPEFrames(
                 MidiSMTPEDivisions{ ticks_per_smtpe_frame, smtpe_frames_per_second }
             )
         }
         // For non-standard headers
-        reader.seek(SeekFrom::Current((length as i64) - (6 as i64)))?;
+        reader.seek(SeekFrom::Current(i64::from(length) - i64::from(6)))?;
         Ok(SMFHeaderChunk {
             length,
             format,
